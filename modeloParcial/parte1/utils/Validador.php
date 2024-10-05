@@ -14,7 +14,16 @@ class Validador{
     }
 
     public static function ValidarConsulta($post){
-        return (self::ValidarString($post["sabor"]) && self::ValidarTipo($post["tipo"]));
+        if(self::ValidarString($post["sabor"])){
+            if(self::ValidarTipo($post["tipo"])){
+                return true;
+            }
+            echo json_encode(['error' => 'Parametros tipo es incorrecto']);
+        } else {
+            echo json_encode(['error'=> 'Parametros sabor es incorrecto']);
+        }
+
+        http_response_code(400);
     }
 
     public static function ValidarTipo($tipo) {
@@ -32,7 +41,7 @@ class Validador{
     }
 
     public static function ValidarString($string) {
-        return isset($string) && is_string($string);
+        return isset($string) && is_string($string) && !is_numeric($string);
     }
 
     public static function ValidarNumero($numero) {

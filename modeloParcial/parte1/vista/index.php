@@ -5,16 +5,9 @@ error_reporting(E_ALL);
 
 require_once "../modelo/Helado.php";
 require_once "../controlador/HeladeriaAlta.php";
-
+require_once "../controlador/HeladoConsultar.php";
 
 switch($_SERVER["REQUEST_METHOD"]){
-    /*case "GET":
-        $helado = Helado::leerHelados();
-
-        foreach($autos as $auto){
-            echo Auto::mostrarAuto($auto) . "<br/>";
-        }
-        break;*/
     case "POST":
         if (isset($_GET['action'])) {
             switch ($_GET['action']) {
@@ -22,7 +15,7 @@ switch($_SERVER["REQUEST_METHOD"]){
                     HeladeriaAlta::altaHelado($_POST);
                     break; 
                 case 'consultar':
-                 //   HeladoConsultar;
+                    HeladoConsultar::consultarHelado($_POST);
                     break;
                 case 'vender':
                   //  AltaVenta;
@@ -33,6 +26,7 @@ switch($_SERVER["REQUEST_METHOD"]){
                     break;
             }
         } else {
+            http_response_code(400);
             echo json_encode(['error' => 'Error: Falta el parametro action']);
         }
 }

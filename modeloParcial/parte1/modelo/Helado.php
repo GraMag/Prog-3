@@ -1,6 +1,6 @@
 <?php
 
-class Helado
+class Helado implements JsonSerializable
 {
     private $_id;
     private $_sabor;
@@ -10,7 +10,6 @@ class Helado
     private $_stock;
 
     public function __construct($sabor, $precio, $tipo, $vaso, $stock) {
-        $this->setId();
         $this->_sabor = $sabor;
         $this->_precio = $precio;
         $this->_tipo = $tipo;
@@ -18,8 +17,20 @@ class Helado
         $this->_stock = $stock;
     }
 
-    private function setId() {
-        $this->_id = rand(1, 100);
+    private function setId($id) {
+        $this->_id = $id;
+    }
+
+    public static function generarId($listaHelados) {
+        $maxId = 0;
+
+        foreach ($listaHelados as $helado) {
+            if ($helado->getId() > $maxId) {
+                $maxId = $helado->getId();
+            }
+        }
+
+        return $maxId + 1;
     }
 
     public function getId() {
@@ -46,31 +57,57 @@ class Helado
         return $this->_stock;
     }
 
-    public function jsonSerialize() {
+    public function jsonSerialize(): array {
         return [
-            '_sabor' => $this->_sabor,
-            '_vaso' => $this->_vaso,
-            '_tipo' => $this->_tipo,
-            '_precio' => $this->_precio,
-            '_stock' => $this->_stock,
-            '_id' => $this->_id
+            'id' => $this->_id,
+            'sabor' => $this->_sabor,
+            'precio' => $this->_precio,
+            'tipo' => $this->_tipo,
+            'vaso' => $this->_vaso,
+            'stock' => $this->_stock
         ];
     }
 
-
-    public static function ActualizarExistencia($listaHelados, $helado) {
+    public static function actualizarExistencia($listaHelados, $helado) {
 
         foreach ($listaHelados as $heladoEnStock) {
-            if ($heladoEnStock->_sabor == $helado->_sabor && $heladoEnStock->_tipo == $helado->_tipo) {
+            if ($heladoEnStock->equals($helado)) {
                 $heladoEnStock->_stock += $helado->_stock;
                 $heladoEnStock->_precio = $helado->_precio;
                 return $listaHelados;
             }
         }
 
+        $id = self::generarId($listaHelados);
+        $helado->setId($id);
         $listaHelados[] = $helado;
         return $listaHelados;
     }
 
+    public static function buscarHelado($listaHelados, $sabor, $tipo) {
+        foreach ($listaHelados as $helado) {
+            if ($helado->_sabor == $sabor && $helado->_tipo == $tipo) {
+                return true;
+            }
+        }
+    }   
 
+
+    public function equals($helado2) {
+        return $this->getSabor() == $helado2->getSabor() && $this->getTipo() == $helado2->getTipo();
+    }
+
+    public static function mapper($json){
+        
+        $listaHelados = [];
+        
+        foreach ($json as $heladoData) {
+            $helado = new Helado($heladoData['sabor'],$heladoData['precio'],$heladoData['tipo'],$heladoData['vaso'],$heladoData['stock']);
+            $helado->setId($heladoData['id']);
+            $listaHelados[] = $helado;
+        }
+
+        return $listaHelados;
+
+    }
 }

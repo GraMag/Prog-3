@@ -1,10 +1,18 @@
 [
     {
-        "_sabor": "Frutilla",
-        "_vaso": "Cucurucho",
-        "_tipo": "Agua",
-        "_precio": "2000",
-        "_stock": "14",
-        "_id": 61
+        "id": 1,
+        "sabor": "Chocolate",
+        "precio": "2000",
+        "tipo": "Agua",
+        "vaso": "Cucurucho",
+        "stock": 24
+    },
+    {
+        "id": 2,
+        "sabor": "Frutilla",
+        "precio": "2000",
+        "tipo": "Agua",
+        "vaso": "Cucurucho",
+        "stock": 28
     }
 ]

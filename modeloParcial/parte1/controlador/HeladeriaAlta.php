@@ -1,17 +1,21 @@
 <?php
 
 require_once "../modelo/Helado.php";
-require_once "../utils/Validaciones.php";
+require_once "../utils/Validador.php";
+require_once "../archivos/Archivos.php";
+require_once "../controlador/HeladoConsultar.php";
 
 class HeladeriaAlta {
     public static function altaHelado($post) {
-        if(Validador::ValidarAltaHelado($post)) {
-            $listaHelados = []; // TODO: leer helados para obtener la lista de helados;
-          
-            $helado = new Helado($_POST["sabor"], $_POST["precio"], $_POST["tipo"], $_POST["vaso"], $_POST["stock"]);
-
-            $listaHelados = Helado::ActualizarExistencia($listaHelados, $helado);
+        if(Validador::validarAltaHelado($post)) {
             
+            $helado = new Helado($_POST["sabor"], $_POST["precio"], $_POST["tipo"], $_POST["vaso"], $_POST["stock"]);
+            
+            $listaHelados = HeladoConsultar::leerHelado();
+          
+            $listaHelados = Helado::actualizarExistencia($listaHelados, $helado);
+            
+            //TODO: agregar imagen del helado
             HeladeriaAlta::guardarHelado($listaHelados);
 
         } else {
@@ -22,20 +26,9 @@ class HeladeriaAlta {
 
     public static function guardarHelado($listaHelados){
     
-        $archivo = fopen('../archivos/helados.json', 'w');
-    
-        if(!$archivo){
-            http_response_code(500);
-            echo json_encode(['error' => 'Error al abrir el archivo']);
-            return;
-        }
-        
-        $heladosArray = [];
-        foreach ($listaHelados as $helado) {
-            array_push($heladosArray, $helado->jsonSerialize());
-        }
+        $archivo = Archivo::abrirArchivo("w+");
 
-        $json = json_encode($heladosArray, JSON_PRETTY_PRINT);
+        $json = json_encode($listaHelados, JSON_PRETTY_PRINT);
 
         if('[]' == $json){
             http_response_code(500);
