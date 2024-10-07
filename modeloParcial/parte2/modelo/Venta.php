@@ -171,4 +171,36 @@ class Venta implements JsonSerializable{
         
         return $listaFiltrada;
     }
+
+    public static function buscarVentasPorSabor($sabor){
+        if(Validador::validarString($sabor)){
+            var_dump($sabor);
+            $listaVentas = Venta::mapper(Archivo::leer(Venta::$jsonPath));
+            
+            $listaFiltrada = [];
+
+            foreach ($listaVentas as $venta) {
+                if(strcasecmp($venta->getPedido()->getSabor(), $sabor) == 0) {
+                    $listaFiltrada[] = $venta;
+                }
+            }
+            return $listaFiltrada;
+        }
+    }
+
+    public static function buscarVentasPorVaso($vaso){
+        if(Validador::validarString($vaso)){
+
+            $listaVentas = Venta::mapper(Archivo::leer(Venta::$jsonPath));
+            
+            $listaFiltrada = [];
+
+            foreach ($listaVentas as $venta) {
+                if(strcasecmp($venta->getPedido()->getVaso(), $vaso)) {
+                    $listaFiltrada[] = $venta;
+                }
+            }
+            return $listaFiltrada;
+        }
+    }
 }

@@ -19,13 +19,11 @@ switch($_SERVER["REQUEST_METHOD"]){
                     ConsultarVentas::consultarVentasPorUsuario($_GET);
                     return;    
                 case "ventasEntreFechas":
-                    //TODO
                     ConsultarVentas::consultarVentasEntreFechas($_GET);
                     return;
-                case "ventasPorSabor":
-                    //TODO
+                case "ventasSabor":
                     ConsultarVentas::consultarVentasPorSabor($_GET);
-                    break;
+                    return;
                 case "ventasPorCucurucho":
                     //TODO
                     ConsultarVentas::consultarVentasPorCucurucho($_GET);

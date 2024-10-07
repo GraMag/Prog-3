@@ -3,7 +3,7 @@
         "id": 1,
         "email": "homero@springmail.com",
         "pedido": {
-            "sabor": "Frutilla",
+            "sabor": "Chocolate",
             "tipo": "Agua",
             "stock": "2",
             "vaso": "Cucurucho"
