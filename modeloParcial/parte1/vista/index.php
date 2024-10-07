@@ -3,9 +3,9 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once "../modelo/Helado.php";
 require_once "../controlador/HeladeriaAlta.php";
 require_once "../controlador/HeladoConsultar.php";
+require_once "../controlador/AltaVenta.php";
 
 switch($_SERVER["REQUEST_METHOD"]){
     case "POST":
@@ -18,7 +18,7 @@ switch($_SERVER["REQUEST_METHOD"]){
                     HeladoConsultar::consultarHelado($_POST);
                     break;
                 case 'vender':
-                  //  AltaVenta;
+                    AltaVenta::altaVenta($_POST);
                     break;
                 default:
                     http_response_code(400);

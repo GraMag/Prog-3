@@ -1,5 +1,7 @@
 <?php
 
+require_once("../utils/Helper.php");
+
 class Helado implements JsonSerializable
 {
     private $_id;
@@ -8,6 +10,7 @@ class Helado implements JsonSerializable
     private $_tipo;
     private $_vaso;
     private $_stock;
+    private $_imagen;
 
     public function __construct($sabor, $precio, $tipo, $vaso, $stock) {
         $this->_sabor = $sabor;
@@ -15,22 +18,11 @@ class Helado implements JsonSerializable
         $this->_tipo = $tipo;
         $this->_vaso = $vaso;
         $this->_stock = $stock;
+        $this->_imagen = "";
     }
 
     private function setId($id) {
         $this->_id = $id;
-    }
-
-    public static function generarId($listaHelados) {
-        $maxId = 0;
-
-        foreach ($listaHelados as $helado) {
-            if ($helado->getId() > $maxId) {
-                $maxId = $helado->getId();
-            }
-        }
-
-        return $maxId + 1;
     }
 
     public function getId() {
@@ -39,10 +31,6 @@ class Helado implements JsonSerializable
 
     public function getSabor() {
         return $this->_sabor;
-    }
-
-    public function getPrecio() {
-        return $this->_precio;
     }
 
     public function getTipo() {
@@ -57,6 +45,14 @@ class Helado implements JsonSerializable
         return $this->_stock;
     }
 
+    public function getimagen() {
+        return $this->_imagen;
+    }
+
+    public function setImagen($imagen) {
+        $this->_imagen = $imagen;
+    }
+
     public function jsonSerialize(): array {
         return [
             'id' => $this->_id,
@@ -64,11 +60,12 @@ class Helado implements JsonSerializable
             'precio' => $this->_precio,
             'tipo' => $this->_tipo,
             'vaso' => $this->_vaso,
-            'stock' => $this->_stock
+            'stock' => $this->_stock,
+            'imagen' => $this->_imagen
         ];
     }
 
-    public static function actualizarExistencia($listaHelados, $helado) {
+    public static function actualizarExistencia($listaHelados, $helado, $archivoImagen) {
 
         foreach ($listaHelados as $heladoEnStock) {
             if ($heladoEnStock->equals($helado)) {
@@ -78,10 +75,24 @@ class Helado implements JsonSerializable
             }
         }
 
-        $id = self::generarId($listaHelados);
+        $id = Helper::generarId($listaHelados);
         $helado->setId($id);
+        $helado->setImagen($helado->cargarImagen($archivoImagen));
+      
         $listaHelados[] = $helado;
         return $listaHelados;
+    }
+
+    public static function restarExistencias($listaHelados, $pedido){
+        
+        foreach ($listaHelados as $heladoEnStock) {
+            if ($heladoEnStock->equalsPedido($pedido)) {
+                $heladoEnStock->_stock -= $pedido->getStock();
+                return $listaHelados;
+            }
+        }
+
+        throw new RuntimeException("No se encontro el helado", 1);
     }
 
     public static function buscarHelado($listaHelados, $sabor, $tipo) {
@@ -90,11 +101,22 @@ class Helado implements JsonSerializable
                 return true;
             }
         }
-    }   
 
+        throw new RuntimeException("No se encontro el helado", 1);        
+    }   
 
     public function equals($helado2) {
         return $this->getSabor() == $helado2->getSabor() && $this->getTipo() == $helado2->getTipo();
+    }
+
+    public function equalsPedido($pedido){
+        if($this->equals($pedido) && $this->getVaso() == $pedido->getVaso()){
+            if($this->getStock() >= $pedido->getStock()){
+                return true;
+            } else {
+                throw new Exception("Stock insuficiente", code: 1);
+            }
+        }
     }
 
     public static function mapper($json){
@@ -102,12 +124,28 @@ class Helado implements JsonSerializable
         $listaHelados = [];
         
         foreach ($json as $heladoData) {
-            $helado = new Helado($heladoData['sabor'],$heladoData['precio'],$heladoData['tipo'],$heladoData['vaso'],$heladoData['stock']);
+            $helado = new Helado(($heladoData['sabor']),$heladoData['precio'],$heladoData['tipo'],$heladoData['vaso'],$heladoData['stock']);
             $helado->setId($heladoData['id']);
+            $helado->setImagen($heladoData['imagen']);
             $listaHelados[] = $helado;
         }
 
         return $listaHelados;
 
     }
+    
+    public function cargarImagen($imagen){
+
+        if(Validador::validarImagen($imagen)){
+            $nombre = $this->getSabor() . "_" . $this->getTipo() . "." . substr($imagen['type'],6);
+            $path = "../imagenes/ImagenesDeHelado/2024/" . $nombre;
+            move_uploaded_file($imagen['tmp_name'],  $path);
+          
+            return strtolower($nombre);
+        } else {
+            throw new Exception("Error al cargar la imagen", 1);
+        }
+    }
+
+
 }

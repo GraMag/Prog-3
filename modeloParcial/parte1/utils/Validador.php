@@ -3,48 +3,62 @@
 class Validador{
 
     public static function ValidarAltaHelado($post){
-        return (self::ValidarConsulta($post) && self::ValidarNumero($post["precio"]) 
-            && self::ValidarTipo($post["tipo"]) && self::ValidarVaso($post["vaso"]) 
-            && self::ValidarNumero($post["stock"]));
+        return (self::validarConsulta($post) && self::validarNumero($post["precio"]) 
+            && self::validarTipo($post["tipo"]) && self::validarVaso($post["vaso"]) 
+            && self::validarNumero($post["stock"]));
     }
 
-    public static function ValidarAltaVenta($post){
-        return (self::ValidarString($post["email"]) && self::ValidarString($post["sabor"]) 
-            && self::ValidarNumero($post["cantidad"])) ? true : false;
+    public static function validarAltaVenta($post){
+        return (self::validarEmail($post["email"]) && self::validarString($post["sabor"]) 
+            && self::validarTipo($post["tipo"]) && self::validarNumero($post["stock"]));
     }
 
-    public static function ValidarConsulta($post){
-        if(self::ValidarString($post["sabor"])){
-            if(self::ValidarTipo($post["tipo"])){
-                return true;
-            }
-            echo json_encode(['error' => 'Parametros tipo es incorrecto']);
-        } else {
-            echo json_encode(['error'=> 'Parametros sabor es incorrecto']);
-        }
-
-        http_response_code(400);
+    public static function validarConsulta($post){
+        return (self::validarString($post["sabor"]) && self::validarTipo($post["tipo"]))
+                ? true
+                : throw new InvalidArgumentException("Parametro sabor es incorrecto", 1);
     }
 
-    public static function ValidarTipo($tipo) {
+    public static function validarTipo($tipo) {
         if(isset($tipo)){
             $tipo = strtolower($tipo);
-            return ($tipo == "crema" || $tipo == "agua");
+            return ($tipo == "crema" || $tipo == "agua")
+            ? true
+            : throw new InvalidArgumentException("Parametro tipo es incorrecto", 1);
         }
     }
 
-    public static function ValidarVaso($vaso) {
+    public static function validarVaso($vaso) {
         if(isset($vaso)){
             $vaso = strtolower($vaso);
-            return ($vaso == "cucurucho" || $vaso == "plastico");
+            return ($vaso == "cucurucho" || $vaso == "plastico" || $vaso == "plástico")
+                ? true
+                : throw new InvalidArgumentException("Parametro vaso es incorrecto", 1);;
         }
+
     }
 
-    public static function ValidarString($string) {
+    public static function validarString($string) {
         return isset($string) && is_string($string) && !is_numeric($string);
     }
 
-    public static function ValidarNumero($numero) {
+    public static function validarNumero($numero) {
         return isset($numero) && is_numeric($numero) && $numero > 0;
+    }
+
+    public static function validarEmail($email) {
+        $regex = "/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/";
+        return (isset($email) && preg_match($regex, $email)) 
+            ? true 
+            : throw new InvalidArgumentException("Parametro email es incorrecto", 1);
+    }
+
+    public static function validarImagen($imagen) {
+        if (!((strpos($imagen['type'], "png") || strpos($imagen['type'], "jpg") || strpos($imagen['type'], "jpeg")) 
+            && ($imagen['size'] < 100000))) {
+            throw new Exception ("La extensión o el tamaño de los archivos no es correcta. Se permiten archivos .jpg o .jpeg de 100 Kb máximo.");
+        } else {
+            return true;
+        }
     }
 }

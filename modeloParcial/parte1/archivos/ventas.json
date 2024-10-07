@@ -1,0 +1,28 @@
+[
+    {
+        "id": 1,
+        "email": "homero@springmail.com",
+        "pedido": {
+            "sabor": "Frutilla",
+            "tipo": "Agua",
+            "stock": "2",
+            "vaso": "Cucurucho"
+        },
+        "numeroDePedido": 1,
+        "fecha": "07-10-2024 05:05:29",
+        "imagen": "Frutilla_Agua_Cucurucho_homero_07-10-2024.jpeg"
+    },
+    {
+        "id": 2,
+        "email": "homero@springmail.com",
+        "pedido": {
+            "sabor": "Frutilla",
+            "tipo": "Agua",
+            "stock": "2",
+            "vaso": "Cucurucho"
+        },
+        "numeroDePedido": 2,
+        "fecha": "07-10-2024 05:14:57",
+        "imagen": "frutilla_agua_cucurucho_homero_07-10-2024.jpeg"
+    }
+]
