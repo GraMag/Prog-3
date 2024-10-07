@@ -63,7 +63,7 @@ class Validador{
     }
 
     public static function validarFecha($fecha) {
-        $regex = "/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/";
+        $regex = "/^([0-9]{2})-([0-9]{2})-([0-9]{4})$/";
         return (isset($fecha) && preg_match($regex, $fecha)) 
             ? true 
             : throw new InvalidArgumentException("Parametro fecha es incorrecto", 1);

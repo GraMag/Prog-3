@@ -11,6 +11,8 @@ class Venta implements JsonSerializable{
     private $_fecha;
     private $_imagen;
 
+    private static $jsonPath = "../archivos/ventas.json";
+
     public function __construct($email, $pedido) {
         $this->_email = $email;
         $this->_pedido = $pedido;   
@@ -111,13 +113,13 @@ class Venta implements JsonSerializable{
         }
     }
 
-    public static function buscarVentasPorFecha($get){
+    public static function buscarVentasPorFecha($fecha){
 
-        $fecha = (isset($get['fecha)']) && Validador::validarFecha($$get['fecha)'])) 
-            ? $get['fecha'] : date("d-m-Y", strtotime("-1 day"));
+        $fecha = (isset($fecha) && Validador::validarFecha($fecha)) 
+            ? $fecha : date("d-m-Y", strtotime("-1 day"));
     
-        $path = "../archivos/ventas.json";
-        $listaVentas = Venta::mapper(Archivo::leer($path));
+        
+        $listaVentas = Venta::mapper(Archivo::leer(Venta::$jsonPath));
 
         $listaFiltrada = [];
 
@@ -127,6 +129,46 @@ class Venta implements JsonSerializable{
             }
         }
 
+        return $listaFiltrada;
+    }
+
+    public static function buscarVentasPorUsuario($email){
+        if(Validador::validarEmail($email)){
+            
+            $listaVentas = Venta::mapper(Archivo::leer(Venta::$jsonPath));
+            
+            $listaFiltrada = [];
+
+            foreach ($listaVentas as $venta) {
+                if(str_contains($venta->getEmail(), $email)) {
+                    $listaFiltrada[] = $venta;
+                }
+            }
+
+            return $listaFiltrada;
+        }
+    }
+
+    public static function buscarVentaEntreFechas($get){
+        $fecha = DateTime::createFromFormat('d-m-Y', $get['fechaDesde']);
+        $fechaHasta = DateTime::createFromFormat('d-m-Y', $get['fechaHasta']);
+        
+        if($fechaHasta < $fecha){
+            throw new Exception("La fecha inicial no puede ser posterior a la fecha final", 1);
+        }
+
+        $listaFiltrada = [];
+
+        while($fecha <= $fechaHasta){
+            $ventasDiarias = Venta::buscarVentasPorFecha($fecha->format('d-m-Y'));
+
+            if($ventasDiarias){
+                $listaFiltrada = array_merge($listaFiltrada, $ventasDiarias);
+            }
+            
+            $fecha = $fecha->modify('+1 day');
+        }
+        
         return $listaFiltrada;
     }
 }

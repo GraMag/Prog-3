@@ -12,17 +12,16 @@ switch($_SERVER["REQUEST_METHOD"]){
     case "GET":
         if(isset($_GET["action"])){
             switch($_GET["action"]){
-                case 'diario':
+                case 'ventaDiaria':
                     ConsultarVentas::consultarVentasEnFecha($_GET);
                     return;
-                case "ventasPorUsuario":
-                    //TODO
+                case "ventasUsuario":
                     ConsultarVentas::consultarVentasPorUsuario($_GET);
-                    break;    
-                case "heladosPorFecha":
+                    return;    
+                case "ventasEntreFechas":
                     //TODO
                     ConsultarVentas::consultarVentasEntreFechas($_GET);
-                    break;
+                    return;
                 case "ventasPorSabor":
                     //TODO
                     ConsultarVentas::consultarVentasPorSabor($_GET);
