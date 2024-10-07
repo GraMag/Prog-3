@@ -169,6 +169,8 @@ class Venta implements JsonSerializable{
             $fecha = $fecha->modify('+1 day');
         }
         
+        usort($listaFiltrada, fn($a, $b) => strcmp($a->getEmail(), $b->getEmail()));
+
         return $listaFiltrada;
     }
 
@@ -196,7 +198,7 @@ class Venta implements JsonSerializable{
             $listaFiltrada = [];
 
             foreach ($listaVentas as $venta) {
-                if(strcasecmp($venta->getPedido()->getVaso(), $vaso)) {
+                if(($venta->getPedido()->getVaso() == $vaso)) {
                     $listaFiltrada[] = $venta;
                 }
             }

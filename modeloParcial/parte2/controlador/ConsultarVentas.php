@@ -42,7 +42,7 @@ class ConsultarVentas{
         try{
             $heladosVendidosUsuario = Venta::buscarVentaEntreFechas($get);
 
-            if(count($heladosVendidosUsuario) == 0){
+            if($heladosVendidosUsuario == 0){
                 http_response_code(404);
                 echo json_encode("No hay resultados");
             } else {
@@ -71,9 +71,9 @@ class ConsultarVentas{
         }
     }
 
-    public static function consultarVentasPorCucurucho($get){
+    public static function consultarVentasPorVaso($vaso){
         try{
-            $heladosVendidosSabor = Venta::buscarVentasPorVaso("Cucurucho");
+            $heladosVendidosSabor = Venta::buscarVentasPorVaso($vaso);
             if(count($heladosVendidosSabor) == 0){
                 http_response_code(404);
                 echo json_encode("No hay resultados");

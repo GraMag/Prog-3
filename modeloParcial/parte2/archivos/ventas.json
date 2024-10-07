@@ -14,7 +14,7 @@
     },
     {
         "id": 2,
-        "email": "homero@springmail.com",
+        "email": "bart@springmail.com",
         "pedido": {
             "sabor": "Frutilla",
             "tipo": "Agua",
@@ -23,7 +23,7 @@
         },
         "numeroDePedido": 2,
         "fecha": "06-10-2024 05:14:57",
-        "imagen": "frutilla_agua_cucurucho_homero_07-10-2024.jpeg"
+        "imagen": "frutilla_agua_cucurucho_bart_07-10-2024.jpeg"
     },
     {
         "id": 3,

@@ -24,10 +24,9 @@ switch($_SERVER["REQUEST_METHOD"]){
                 case "ventasSabor":
                     ConsultarVentas::consultarVentasPorSabor($_GET);
                     return;
-                case "ventasPorCucurucho":
-                    //TODO
-                    ConsultarVentas::consultarVentasPorCucurucho($_GET);
-                    break;
+                case "ventasCucurucho":
+                    ConsultarVentas::consultarVentasPorVaso("Cucurucho");
+                    return;
                 default:
                     http_response_code(400);
                     echo json_encode(["error" => "Acción invalida"]);
