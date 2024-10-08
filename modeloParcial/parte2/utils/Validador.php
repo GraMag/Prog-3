@@ -19,6 +19,12 @@ class Validador{
                 : throw new InvalidArgumentException("Parametro sabor es incorrecto", 1);
     }
 
+    public static function validarModificacionVenta($post){
+     
+        return (self::validarEmail($post["email"]) && self::validarString($post["sabor"]) 
+            && self::validarTipo($post["tipo"]) && self::validarVaso($post["vaso"]));
+    }
+
     public static function validarTipo($tipo) {
         if(isset($tipo)){
             $tipo = strtolower($tipo);

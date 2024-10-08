@@ -36,6 +36,14 @@ class Venta implements JsonSerializable{
         $this->_imagen = $imagen;
     }
 
+    public function setEmail($email){
+        $this->_email = $email;
+    }
+
+    public function setPedido($pedido){
+        $this->_pedido = $pedido;
+    }
+
     public function getId(){
         return $this->_id;
     }
@@ -54,6 +62,10 @@ class Venta implements JsonSerializable{
 
     public function getimagen() {
         return $this->_imagen;
+    }
+
+    public function getNumeroDePedido(){
+        return $this->_numeroDePedido;
     }
 
     public static function agregarVenta($listaVentas, $venta, $imagen){
@@ -176,7 +188,7 @@ class Venta implements JsonSerializable{
 
     public static function buscarVentasPorSabor($sabor){
         if(Validador::validarString($sabor)){
-            var_dump($sabor);
+        
             $listaVentas = Venta::mapper(Archivo::leer(Venta::$jsonPath));
             
             $listaFiltrada = [];
@@ -204,5 +216,26 @@ class Venta implements JsonSerializable{
             }
             return $listaFiltrada;
         }
+    }
+
+    public static function actualizarVenta($numeroDePedido, $email, $pedido){
+        $listaVentas = Venta::mapper(Archivo::leer(Venta::$jsonPath));
+
+        foreach ($listaVentas as $ventaActual) {
+            if($ventaActual->getNumeroDePedido() == $numeroDePedido){
+                $ventaTmp = $ventaActual;
+                $ventaTmp->setEmail($email);
+                $ventaTmp->setPedido($pedido);
+
+                $ventaActual = $ventaTmp;
+                
+                var_dump($listaVentas);
+                Archivo::guardar(Venta::$jsonPath, $listaVentas);
+
+                return true;
+            }
+        }
+
+        return false;
     }
 }

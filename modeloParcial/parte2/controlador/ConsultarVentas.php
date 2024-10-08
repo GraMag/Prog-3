@@ -5,9 +5,7 @@ class ConsultarVentas{
     public static function consultarVentasEnFecha($get){
         try{
             $heladosVendidosFecha = count(Venta::buscarVentasPorFecha($get['fecha']));
-            
-            var_dump($heladosVendidosFecha);
-            
+              
             if($heladosVendidosFecha == 0){
                 http_response_code(404);
                 echo json_encode("No hay resultados");

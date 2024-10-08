@@ -7,6 +7,7 @@ require_once "../controlador/HeladeriaAlta.php";
 require_once "../controlador/HeladoConsultar.php";
 require_once "../controlador/AltaVenta.php";
 require_once "../controlador/ConsultarVentas.php";
+require_once "../controlador/ModificarVenta.php";
 
 switch($_SERVER["REQUEST_METHOD"]){
     case "GET":
@@ -14,19 +15,19 @@ switch($_SERVER["REQUEST_METHOD"]){
             switch($_GET["action"]){
                 case 'ventaDiaria':
                     ConsultarVentas::consultarVentasEnFecha($_GET);
-                    return;
+                    break;
                 case "ventasUsuario":
                     ConsultarVentas::consultarVentasPorUsuario($_GET);
-                    return;    
+                    break;    
                 case "ventasEntreFechas":
                     ConsultarVentas::consultarVentasEntreFechas($_GET);
-                    return;
+                    break;
                 case "ventasSabor":
                     ConsultarVentas::consultarVentasPorSabor($_GET);
-                    return;
+                    break;
                 case "ventasCucurucho":
                     ConsultarVentas::consultarVentasPorVaso("Cucurucho");
-                    return;
+                    break;
                 default:
                     http_response_code(400);
                     echo json_encode(["error" => "Acción invalida"]);
@@ -36,6 +37,7 @@ switch($_SERVER["REQUEST_METHOD"]){
             http_response_code(400);
             echo json_encode(["error" => "Error: Falta el parametro action"]);
         }
+        break;
     case "POST":
         if (isset($_GET['action'])) {
             switch ($_GET['action']) {
@@ -57,4 +59,23 @@ switch($_SERVER["REQUEST_METHOD"]){
             http_response_code(400);
             echo json_encode(['error' => 'Error: Falta el parametro action']);
         }
+        break;
+    case "PUT":
+        parse_str(file_get_contents("php://input"), $putData);
+
+        if (isset($_GET["action"])) {
+            switch ($_GET["action"]) {
+                case "actualizar":
+                    ModificarVenta::modificar($putData);
+                    break;
+                default:
+                    http_response_code(400);
+                    echo json_encode(["error" => "Acción invalida"]);
+                    break;
+            }
+        } else {
+            http_response_code(400);
+            echo json_encode(["error" => "Error: Falta el parametro action"]);
+        }
+        break;
 }

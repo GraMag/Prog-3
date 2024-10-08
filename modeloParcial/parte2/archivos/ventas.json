@@ -27,12 +27,12 @@
     },
     {
         "id": 3,
-        "email": "marge@springmail.com",
+        "email": "homero@springmail.com",
         "pedido": {
-            "sabor": "Frutilla",
+            "sabor": "Vainilla",
             "tipo": "Agua",
-            "stock": "2",
-            "vaso": "Cucurucho"
+            "stock": "5",
+            "vaso": "Pl\u00e1stico"
         },
         "numeroDePedido": 3,
         "fecha": "07-10-2024 05:14:57",
