@@ -1,0 +1,12 @@
+[
+    {
+        "id": 1,
+        "titulo": "Volver al futuro",
+        "precio": 15000,
+        "tipo": "pelicula",
+        "anio": 1985,
+        "formato": "digital",
+        "stock": "121",
+        "imagen": "volveralfuturo_pelicula.jpeg"
+    }
+]
