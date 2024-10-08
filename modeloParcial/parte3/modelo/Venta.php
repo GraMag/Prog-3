@@ -12,6 +12,7 @@ class Venta implements JsonSerializable{
     private $_numeroDePedido;
     private $_fecha;
     private $_imagen;
+    private $_eliminado;
 
     private static $jsonPath = "../archivos/ventas.json";
 
@@ -20,6 +21,7 @@ class Venta implements JsonSerializable{
         $this->_pedido = $pedido;   
         $this->_numeroDePedido = $this->_id;
         $this->_imagen = "";
+        $this->_eliminado = false;
     }
 
     private function setId($id){
@@ -46,6 +48,10 @@ class Venta implements JsonSerializable{
         $this->_pedido = $pedido;
     }
 
+    private function setEliminado($eliminado){
+        $this->_eliminado = $eliminado;
+    }
+
     public function getId(){
         return $this->_id;
     }
@@ -70,6 +76,10 @@ class Venta implements JsonSerializable{
         return $this->_numeroDePedido;
     }
 
+    public function getEliminado(){
+        return $this->_eliminado;
+    }
+
     public static function agregarVenta($listaVentas, $venta, $imagen){
         $id = Helper::generarId($listaVentas);
         $venta->setId($id);
@@ -88,6 +98,7 @@ class Venta implements JsonSerializable{
             $venta->setNumeroDePedido($ventaData["numeroDePedido"]);
             $venta->setFecha($ventaData["fecha"]);
             $venta->setImagen($ventaData["imagen"]);
+            $venta->setEliminado($ventaData["eliminado"]);
 
             $listaVentas[] = $venta;
         }
@@ -102,7 +113,8 @@ class Venta implements JsonSerializable{
             "pedido" => $this->_pedido,
             "numeroDePedido" => $this->_numeroDePedido,
             "fecha" => $this->_fecha,
-            "imagen" => $this->_imagen
+            "imagen" => $this->_imagen,
+            "eliminado" => $this->_eliminado
         ];
     }
 
@@ -231,7 +243,6 @@ class Venta implements JsonSerializable{
 
                 $ventaActual = $ventaTmp;
                 
-                var_dump($listaVentas);
                 Archivo::guardar(Venta::$jsonPath, $listaVentas);
 
                 return true;
@@ -247,7 +258,6 @@ class Venta implements JsonSerializable{
         
         foreach ($listaVentas as $ventaActual) {
             if($ventaActual->getNumeroDePedido() == $post["numeroDePedido"]){
-                var_dump($post);
                 $devolucion = new Devolucion($post["numeroDePedido"], $post["causa"], $file["imagen"]);
                 $cupon = new Cupon($devolucion->getId());
                 
@@ -267,5 +277,21 @@ class Venta implements JsonSerializable{
         return false;
     }
 
-   
+   public static function borrar($get) {
+        $listaVentas = Venta::mapper(Archivo::leer(Venta::$jsonPath));
+
+        foreach ($listaVentas as $ventaActual) {
+            if($ventaActual->getNumeroDePedido() == $get["numeroDePedido"]) {
+      
+                if($ventaActual->getEliminado()) {
+                    throw new Exception("La venta ya fue eliminada anteriormente");
+                } 
+
+                $ventaActual->setEliminado(true);
+                Archivo::guardar(Venta::$jsonPath, $listaVentas);
+                return true;
+            }
+        }
+        return false;    
+   }
 }

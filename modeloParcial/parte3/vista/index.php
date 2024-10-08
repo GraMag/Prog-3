@@ -9,6 +9,7 @@ require_once "../controlador/AltaVenta.php";
 require_once "../controlador/ConsultarVentas.php";
 require_once "../controlador/ModificarVenta.php";
 require_once "../controlador/DevolverHelado.php";
+require_once "../controlador/BorrarVenta.php";
 
 switch($_SERVER["REQUEST_METHOD"]){
     case "GET":
@@ -52,7 +53,6 @@ switch($_SERVER["REQUEST_METHOD"]){
                     AltaVenta::altaVenta($_POST);
                     break;
                 case 'devolver':
-                    var_dump($_POST);
                     DevolverHelado::devolverHelado($_POST);
                     break;
                 default:
@@ -82,5 +82,22 @@ switch($_SERVER["REQUEST_METHOD"]){
             http_response_code(400);
             echo json_encode(["error" => "Error: Falta el parametro action"]);
         }
+        break;
+    case "DELETE":
+        if (isset($_GET["action"])) {
+            switch ($_GET["action"]) {
+                case "eliminar":
+                    BorrarVenta::borrar($_GET);
+                    break;
+                default:
+                http_response_code(400);
+                echo json_encode(["error" => "Acción invalida"]);
+                break;
+            }
+        break;
+    }
+    default:
+        http_response_code(400);
+        echo json_encode(["error" => "Metodo no permitido"]);
         break;
 }

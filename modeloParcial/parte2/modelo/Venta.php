@@ -229,7 +229,6 @@ class Venta implements JsonSerializable{
 
                 $ventaActual = $ventaTmp;
                 
-                var_dump($listaVentas);
                 Archivo::guardar(Venta::$jsonPath, $listaVentas);
 
                 return true;
