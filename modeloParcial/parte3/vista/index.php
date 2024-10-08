@@ -8,6 +8,7 @@ require_once "../controlador/HeladoConsultar.php";
 require_once "../controlador/AltaVenta.php";
 require_once "../controlador/ConsultarVentas.php";
 require_once "../controlador/ModificarVenta.php";
+require_once "../controlador/DevolverHelado.php";
 
 switch($_SERVER["REQUEST_METHOD"]){
     case "GET":
@@ -50,6 +51,10 @@ switch($_SERVER["REQUEST_METHOD"]){
                 case 'vender':
                     AltaVenta::altaVenta($_POST);
                     break;
+                case 'devolver':
+                    var_dump($_POST);
+                    DevolverHelado::devolverHelado($_POST);
+                    break;
                 default:
                     http_response_code(400);
                     echo json_encode(['error' => 'Acción invalida']);
@@ -60,6 +65,22 @@ switch($_SERVER["REQUEST_METHOD"]){
             echo json_encode(['error' => 'Error: Falta el parametro action']);
         }
         break;
-    
-    
+    case "PUT":
+        parse_str(file_get_contents("php://input"), $putData);
+
+        if (isset($_GET["action"])) {
+            switch ($_GET["action"]) {
+                case "actualizar":
+                    ModificarVenta::modificar($putData);
+                    break;
+                default:
+                    http_response_code(400);
+                    echo json_encode(["error" => "Acción invalida"]);
+                    break;
+            }
+        } else {
+            http_response_code(400);
+            echo json_encode(["error" => "Error: Falta el parametro action"]);
+        }
+        break;
 }

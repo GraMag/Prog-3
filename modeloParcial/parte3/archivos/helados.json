@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "sabor": "Frutilla",
+        "precio": "2000",
+        "tipo": "Agua",
+        "vaso": "Cucurucho",
+        "stock": 24,
+        "imagen": "Frutilla_Agua.jpeg"
+    },
+    {
+        "id": 2,
+        "sabor": "Chocolate",
+        "precio": "2000",
+        "tipo": "Crema",
+        "vaso": "Cucurucho",
+        "stock": "14",
+        "imagen": "Chocolate_Crema.jpeg"
+    }
+]
