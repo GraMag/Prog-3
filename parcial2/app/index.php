@@ -14,6 +14,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 require_once __DIR__ . '/controller/TiendaController.php';
 require_once __DIR__ . '/controller/VentaController.php';
+require_once __DIR__ . '/middleware/InputMiddleware.php';
 
 $app = AppFactory::create();
 
@@ -22,7 +23,7 @@ $app->addErrorMiddleware(true, true, true);
 $app->addBodyParsingMiddleware();
 
 $app->group('/tienda', function (RouteCollectorProxy $group) {
-	$group->post('/alta', \TiendaController::class . ':alta');
+    $group->post('/alta', \TiendaController::class . ':alta')->add(new AltaProdInputMiddleware());
 	$group->post('/consultar', \TiendaController::class . ':traerTodos');
 });
 
