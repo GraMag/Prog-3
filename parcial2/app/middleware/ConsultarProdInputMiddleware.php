@@ -1,21 +1,17 @@
 <?php 
 
-use Slim\Exception\HttpBadRequestException;
-use Slim\Psr7\Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Psr\Http\Message\ResponseInterface as Response;
 
 require_once __DIR__ . '/../utils/Validador.php';
 
-require_once __DIR__ . '/ConsultarProdInputMiddleware.php';
-
-class AltaProdInputMiddleware extends ConsultarProdInputMiddleware{
-    
+class ConsultarProdInputMiddleware{
     public function __invoke(Request $request, RequestHandler $handler): Response
     {
         $payload = '';
-        $response = new Response();
-
+        $response = new \Slim\Psr7\Response();
+        
         try{
             $parametros = $request->getParsedBody();
             
@@ -23,17 +19,12 @@ class AltaProdInputMiddleware extends ConsultarProdInputMiddleware{
             
             $this->validarLogicaNegocio($parametros);
             
-            $this->validarImagen();
-            
             $response = $handler->handle($request);
         } catch (InvalidArgumentException $e) {
             $payload = json_encode(array("mensaje" => $e->getMessage()));
             $response = $response->withStatus(400);
-        } catch (HttpBadRequestException $e) {
-            $payload = json_encode(array("mensaje" => $e->getMessage()));
-            $response = $response->withStatus(400);
         } catch (Exception $e) {
-            $payload = json_encode(array("mensaje" => "Error al crear el producto. " . $e->getMessage()));
+            $payload = json_encode(array("mensaje" => "Error: " . $e->getMessage()));
             $response = $response->withStatus(500);
         } finally {
             $response = $response->withHeader('Content-Type', 'application/json');
@@ -44,31 +35,19 @@ class AltaProdInputMiddleware extends ConsultarProdInputMiddleware{
 
     protected function validarParametrosRequeridos($parametros)
     {
-        parent::validarParametrosRequeridos($parametros);
-
-        $parametrosRequeridos =  ['precio', 'anioDeSalida', 'stock'];
+        $parametrosRequeridos = ['titulo', 'tipo', 'formato'];
 
         foreach ($parametrosRequeridos as $clave) {
             if (!isset($parametros[$clave]) || empty($parametros[$clave])) {
-                throw new InvalidArgumentException("El parámetro $clave es requerido y no puede estar vacío.");
+                throw new InvalidArgumentException("Debe ingresar $clave.");
             }
         }
     }
 
-    private function validarImagen()
-    {
-        if (!isset($_FILES['imagen']) || $_FILES['imagen']['error'] !== UPLOAD_ERR_OK) {
-            throw new InvalidArgumentException( "Se requiere una imagen.");
-        }
-    
-        Validador::validarImagen($_FILES['imagen']);
-    }
-
     protected function validarLogicaNegocio(array $parametros)
     {
-        parent::validarLogicaNegocio($parametros);
-        Validador::validarNumero($parametros['precio']);
-        Validador::validarAnio($parametros['anioDeSalida']);
-        Validador::validarNumero($parametros['stock']);
+        Validador::validarString($parametros['titulo']);
+        Validador::validarTipo($parametros['tipo']);
+        Validador::validarFormato($parametros['formato']);
     }
 }

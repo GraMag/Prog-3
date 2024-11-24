@@ -100,14 +100,14 @@ class Producto{
         return strtolower($titulo);
     }
 
-    public function consultar($request){
+    public static function consultar($request){
         $parametros = $request->getParsedBody();
         $titulo = $parametros['titulo'];
-        $tipo = $parametros['tipo'];
-        $formato = $parametros['formato'];
+        $tipo = strtoupper($parametros['tipo']);
+        $formato = strtoupper($parametros['formato']);
         
         $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
-        $consulta = $objetoAccesoDato->RetornarConsulta("SELECT * from productos where titulo = :titulo and tipo = :tipo and formato = :formato");
+        $consulta = $objetoAccesoDato->RetornarConsulta("SELECT id, titulo, precio, tipo, año_de_salida as anioDeSalida, formato, stock, imagen from productos where titulo = :titulo and tipo = :tipo and formato = :formato");
         $consulta->bindValue(':titulo', $titulo, PDO::PARAM_STR);
         $consulta->bindValue(':tipo', $tipo, PDO::PARAM_STR);
         $consulta->bindValue(':formato', $formato, PDO::PARAM_STR);
@@ -115,5 +115,9 @@ class Producto{
         $consulta->execute();
         
         return $consulta->fetchAll(PDO::FETCH_CLASS, 'Producto');
+    }
+
+    public static function existeProducto($request){
+        return (count(self::consultar($request)) > 0);
     }
 }
