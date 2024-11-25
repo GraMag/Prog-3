@@ -7,7 +7,7 @@ include_once __DIR__ . '/../modelo/Producto.php';
 class TiendaController {
 
     public function alta($request, $response, $args) {
-        
+        $payload = '';
         try{
             $prod = new Producto();
             $prod->alta($request);
@@ -31,8 +31,13 @@ class TiendaController {
 
     public function traerTodos($request, $response, $args) {
 
+        $payload = '';
+
         try{
-            if(Producto::existeProducto($request)){
+            $lista = Producto::consultar($request);
+            
+            if(Producto::existeProducto($lista)){
+                print("Existe el producto ");
                 $response = $response->withStatus(200);
                 $payload = json_encode(array("mensaje" => "Existe el producto " . $request->getParsedBody()['titulo']));
             }else{

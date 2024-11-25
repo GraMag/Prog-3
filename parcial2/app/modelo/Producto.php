@@ -65,24 +65,46 @@ class Producto{
         $this->imagen = $this->cargarImagen($_FILES['imagen']);
         
         $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
-        $consulta = $objetoAccesoDato->RetornarConsulta("INSERT into productos (titulo, precio, tipo, año_de_salida, formato, stock, imagen) values(:titulo, :precio, :tipo, :anioDeSalida, :formato, :stock, :imagen)");
-        $consulta->bindValue(':titulo', $this->getTitulo(), PDO::PARAM_STR);
-        $consulta->bindValue(':precio', $this->getPrecio(), PDO::PARAM_STR);
-        $consulta->bindValue(':tipo', $this->getTipo(), PDO::PARAM_STR);
-        $consulta->bindValue(':anioDeSalida', $this->getAnioDeSalida(), PDO::PARAM_INT);
-        $consulta->bindValue(':formato', $this->getFormato(), PDO::PARAM_STR);
-        $consulta->bindValue(':stock', $this->getStock(), PDO::PARAM_INT);
-        $consulta->bindValue(':imagen', $this->getImagen(), PDO::PARAM_STR);
         
-        $consulta->execute();
-        
+        $producto = Producto::consultarUno($this->getTitulo(), $this->getTipo(), $this->getFormato());
+        if($producto){
+            $producto->actualizarExistencias($this);
+            Producto::actualizarProducto($objetoAccesoDato, $producto);
+        } else {
+            Producto::crearProducto($objetoAccesoDato, $this);
+        }    
+
         return $objetoAccesoDato->RetornarUltimoIdInsertado();
         
     }
     
-    public function actualizarExistencias($producto){
+    private static function crearProducto($objetoAccesoDato, $producto){
+            $consulta = $objetoAccesoDato->RetornarConsulta("INSERT into productos (titulo, precio, tipo, año_de_salida, formato, stock, imagen) values(:titulo, :precio, :tipo, :anioDeSalida, :formato, :stock, :imagen)");
+            $consulta->bindValue(':titulo', $producto->getTitulo(), PDO::PARAM_STR);
+            $consulta->bindValue(':precio', $producto->getPrecio(), PDO::PARAM_STR);
+            $consulta->bindValue(':tipo', $producto->getTipo(), PDO::PARAM_STR);
+            $consulta->bindValue(':anioDeSalida', $producto->getAnioDeSalida(), PDO::PARAM_INT);
+            $consulta->bindValue(':formato', $producto->getFormato(), PDO::PARAM_STR);
+            $consulta->bindValue(':stock', $producto->getStock(), PDO::PARAM_INT);
+            $consulta->bindValue(':imagen', $producto->getImagen(), PDO::PARAM_STR);
+
+            $consulta->execute();
+    }
+
+    public function actualizarExistencias($producto): void{
         $this->setPrecio($producto->getPrecio());
         $this->setStock($this->getStock() + $producto->getStock());
+    }
+
+    public static function actualizarProducto($objetoAccesoDato, $producto){
+        $consulta = $objetoAccesoDato->RetornarConsulta("UPDATE productos set precio = :precio, stock = :stock where titulo = :titulo and tipo = :tipo and formato = :formato");
+        $consulta->bindValue(':titulo', $producto->getTitulo(), PDO::PARAM_STR);
+        $consulta->bindValue(':precio', $producto->getPrecio(), PDO::PARAM_STR);
+        $consulta->bindValue(':tipo', $producto->getTipo(), PDO::PARAM_STR);
+        $consulta->bindValue(':formato', $producto->getFormato(), PDO::PARAM_STR);
+        $consulta->bindValue(':stock', $producto->getStock(), PDO::PARAM_INT);
+
+        $consulta->execute();
     }
     
     public function equals($producto){
@@ -117,7 +139,19 @@ class Producto{
         return $consulta->fetchAll(PDO::FETCH_CLASS, 'Producto');
     }
 
-    public static function existeProducto($request){
-        return (count(self::consultar($request)) > 0);
+    public static function existeProducto($productos){
+        return count($productos) > 0 || $productos;
+    }
+
+    public static function consultarUno($titulo, $tipo, $formato){
+        $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso();
+        $consulta = $objetoAccesoDato->RetornarConsulta("SELECT id, titulo, precio, tipo, año_de_salida as anioDeSalida, formato, stock, imagen from productos where titulo = :titulo and tipo = :tipo and formato = :formato");
+        $consulta->bindValue(':titulo', $titulo, PDO::PARAM_STR);
+        $consulta->bindValue(':tipo', $tipo, PDO::PARAM_STR);
+        $consulta->bindValue(':formato', $formato, PDO::PARAM_STR);
+        
+        $consulta->execute();
+        
+        return $consulta->fetchObject('Producto');
     }
 }
